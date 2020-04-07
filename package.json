@@ -1,0 +1,17 @@
+{
+  "name": "personalitypredictorbot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "botbuilder": "^3.13.1",
+    "needle": "^2.4.1",
+    "node-uuid": "^1.4.8",
+    "restify": "^8.5.1"
+  }
+}
