@@ -10,6 +10,7 @@ var exp=['beginner','moderate','advanced'];
 var mcq=['a','b','c','d'];
 var man=['dolly','tommy','leo'];
 var yn=['yes','no'];
+var rc=['result','continue'];
 
 server.listen(process.env.port || process.env.PORT || 3978, function () {
 console.log('%s listening to %s', server.name, server.url);
@@ -95,7 +96,7 @@ function getCardsAttachments(session) {
         new builder.HeroCard(session)
             .title('LinkedIn')
             .images([
-                builder.CardImage.create(session, 'https://business.linkedin.com/etc/designs/gandalf/images/og-social-share-image.jpg')
+                builder.CardImage.create(session, 'https://media-exp1.licdn.com/dms/image/C560BAQEycJeX0KQHNg/company-logo_200_200/0?e=2159024400&v=beta&t=oTlZyZkPsh-YSrnHXzT674QrnHKClYz6ZRUYRa8sGV0')
             ]).buttons([
                 builder.CardAction.openUrl(session,'https://www.linkedin.com/company/high-noon-corporation'),    
             ]),
@@ -126,13 +127,15 @@ function (session)
     session.beginDialog('/choice');
 
 });
+
 function getGuidelines(session) {
     return new builder.HeroCard(session)
     .title('High Noon Corp')
     .images([
         builder.CardImage.create(session, 'https://pbs.twimg.com/media/EThcSKoUMAEq7-S?format=png&name=small')
     ]);
-}
+};
+
 bot.dialog('/choice',[   
     function (session) {
     session.send("You must choose one of the following queries")
@@ -144,6 +147,7 @@ bot.dialog('/choice',[
     session.send(ch);
     session.send("Remember, while answering, that once ENTER key is pressed, your answer will be considered as submitted\n"+"\nDepending on the domain you choose, questions will be posed.")
 }]);
+
 function getDomainChoice(session) {
   return [
       new builder.HeroCard(session)
@@ -181,6 +185,7 @@ function(session,results,clp)
 {}).triggerAction({
     matches: 'DBA'
 }); 
+
 bot.dialog('/dbconfirmation',
 [  function(session,clp)
     { 
@@ -296,7 +301,7 @@ bot.dialog('/ProblemSolving',
     {
         dbcount=dbcount+1;
     }
-    session.send("Q. All except one of the following are important strategies that a manager can use to create a more effective decision-making environment, which one is not?\n"+"\n * Encourage others to make Decisions\n"+"\n * Be ready to try new things\n"+"\n * Relying solely upon himself/herself\n"+"\n * Recognize the importance of quality information ");
+    session.send("Q. All except one of the following are important strategies that a manager can use to create a more effective decision-making environment, which one is not? *\n"+"\n * Encourage others to make Decisions\n"+"\n * Be ready to try new things\n"+"\n * Relying solely upon himself/herself\n"+"\n * Recognize the importance of quality information ");
     //session.beginDialog('/choice');
     console.log(dbcount);
 }]);
@@ -397,7 +402,7 @@ bot.dialog('/Sqlcheck',
         dbcount=dbcount+2;
     }
     console.log(dbcount);
-    session.send("Q5. Find a query to find duplicate rows in table. ");
+    session.send("Q5. Find a query to find duplicate rows in table. *");
     session.beginDialog('/DBTech5');
 }
 ]);
@@ -418,7 +423,7 @@ bot.dialog('/DBTech5',
         dbcount=dbcount+2;
     }
     console.log(dbcount);
-    session.send("Q6. Which of the following is the 'Query to fetch last record from the table'?*");
+    session.send("Q6. Which of the following is the 'Query to fetch last record from the table'? *");
     session.beginDialog('/DBTech6');
 }
 ]);
@@ -461,7 +466,30 @@ bot.dialog('/DBTech7',
     }
     console.log(dbcount);
     session.send("You have reached the end of this domain!")
-    session.beginDialog('/DBSuccess');
+    session.beginDialog('/DBChoiceResult');
+}
+]);
+
+bot.dialog('/DBChoiceResult',
+[  function(session,clp)
+    { 
+        avg=clp;
+        builder.Prompts.choice(session,'Do you think you did well and wish to view result or continue to the next domain ',rc);   
+        session.message.text=avg;
+    },
+     function(session,results,avg)
+    { 
+    var sc = session.message.text;
+   
+    if(sc==='continue')
+    {
+        session.send("Choose between Software Tester and Coder:");
+    }
+    else
+    {
+        session.beginDialog('/DBSuccess');
+    }
+    console.log(dbcount);
 }
 ]);
 
@@ -472,16 +500,20 @@ function (session)
     {
         session.send("You are eligible to become a great DATABASE ADMINISTRATOR");
     }
+    else
+    {
+        session.send("Just a bit more and you will make a great DBA")
+    }
     var dbcard = getDBcard();
     var db = new builder.Message(session).addAttachment(dbcard);
     session.send(db);
     //session.beginDialog('AttentionToDetail');
-    session.send("It was nice interacting with you. Hopefully we were of some help!");
+    //session.send("It was nice interacting with you. Hopefully we were of some help!");
 });
 function getDBcard(session) {
     return new builder.HeroCard(session)
     .images([
-        builder.CardImage.create(session, 'https://lh3.googleusercontent.com/proxy/b3ZcVqdYHrBWRql2hFTicJ_fx2JMZ01BZBKvTHe_H2I_hPTQSKhHVFO9v2pIDmIz1HSwhaKE94cDMkzya8TzQD4QrScUrNvvIw3486cBVleSagrs3moPeZIpmkx_Lg')
+        builder.CardImage.create(session, 'https://www.careertoolkit.com/wp-content/uploads/2016/11/database-admin-500.jpg')
     ]);
 }
 
@@ -489,7 +521,7 @@ function getDBcard(session) {
 bot.dialog('ST',
 function (session,args,next){
     var clp=session.message.text;
-    session.send("You have chosen Software Tester domain. Let's begin!");
+    session.send("You have begun Software Tester domain. Let's begin!");
     session.userData.number=clp;
     session.beginDialog('/stconfirmation');
 },
@@ -715,6 +747,7 @@ bot.dialog('/TeamPlayer',
     console.log(stcount);
     //console.log(ccount);
     session.send("Q. State whether each statement is True or False.\n"+"\nRemember to comma seperate them like 'true,true,true' or answer in batches like 'ttt' or 'fff' ");
+    session.send(" -> The best policy is to ask for identify of the person or the other end first before announcing your identity.\n"+"\n -> Never leave a caller or hold.\n"+"\n -> Use simple language, avoid slang technical ferns.");
 }
 ]);
 
@@ -833,10 +866,33 @@ function (session,args,next){
     }
     console.log(stcount);
     session.send("You have reached the end of this domain!");
-    session.beginDialog('/STSuccess');
+    session.beginDialog('/STChoiceResult');
 }).triggerAction({
     matches: 'STTech7'
 });
+
+bot.dialog('/STChoiceResult',
+[  function(session,clp)
+    { 
+        avg=clp;
+        builder.Prompts.choice(session,'Do you think you did well and wish to view result or continue to the next domain ',rc);   
+        session.message.text=avg;
+    },
+     function(session,results,avg)
+    { 
+    var sc = session.message.text;
+   
+    if(sc==='continue')
+    {
+        session.send("Choose between Database Administrator and Coder:");
+    }
+    else
+    {
+        session.beginDialog('/STSuccess');
+    }
+    console.log(dbcount);
+}
+]);
 
 bot.dialog('/STSuccess',
 function (session)
@@ -933,7 +989,7 @@ bot.dialog('/CDLevel',
     session.send("Q. A team of 5 players Ashwin, Rahul, Sachin, Virat and Rohit participated in a tournament and played four matches. The following table gives partial information about their individual scores and the total runs scored by the team in each match. Each column has two values missing. These are the runs scored by the two lowest scorers in that match. None of the two missing values is more than 10% of the total runs scored in that match.");
     session.beginDialog('/tablecard');
     session.send("What is the maximum possible percentage contribution of Ashwin in the total runs scored in the four matches? ");
-    session.beginDialog("/LogicalSkills");
+    //session.beginDialog("/LogicalSkills");
 }
 ]);
 
@@ -953,18 +1009,13 @@ function getTableCard(session) {
     ]);
 }
 
-bot.dialog('/LogicalSkills',
-[  function(session,clp)
-    { 
-        avg=clp;
-        builder.Prompts.choice(session,' a) 19.7%\n'+'\n b) 19.9%\n'+'\n c) 20.1% \n'+'\n d) 20.5%',mcq);   
-        session.message.text=avg;
-    },
+bot.dialog('LogicalSkills',
+
      function(session,results,avg)
     { 
     var sc = session.message.text;
    
-    if(sc==='a')
+    if(sc==='19.7%' || sc==='19.7')
     {
         ccount=ccount+2;
     }
@@ -972,8 +1023,9 @@ bot.dialog('/LogicalSkills',
     //console.log(ccount);
     session.send("Q. Describe the level of communication between team members: ");
     session.beginDialog('/TeamPlayerCoder');
-}
-]);
+}).triggerAction({
+    matches: 'LogicalSkills'
+});
 
 bot.dialog('/TeamPlayerCoder',
 [  function(session,clp)
@@ -1030,7 +1082,7 @@ bot.dialog('/PS',
     { 
     var sc = session.message.text;
    
-    if(sc==='8')
+    if(sc==='8' || sc==='eight')
     {
         ccount=ccount+1;
     }
@@ -1053,7 +1105,7 @@ function (session)
 function getCTCard(session) {
     return new builder.HeroCard(session)
     .images([
-        builder.CardImage.create(session, 'https://pbs.twimg.com/media/EUzuD7RUEAEV2T8?format=png&name=small')
+        builder.CardImage.create(session, 'https://pbs.twimg.com/media/EX9rgA-UMAUv3Ov?format=png&name=small')
     ]);
 }
 
@@ -1139,7 +1191,7 @@ bot.dialog('/Patience',
 bot.dialog('CTech1',
 function (session,args,next){
     var sc=session.message.text;
-    if(sc==='java.lang.Object')
+    if(sc==='java.lang.Object' || sc==='java.lang.object')
     {
         ccount=ccount+1;
     }
@@ -1152,7 +1204,7 @@ function (session,args,next){
 bot.dialog('CTech2',
 function (session,args,next){
     var sc=session.message.text;
-    if(sc==='Compile time error' || sc==='Compiler error')
+    if(sc==='Compile time error' || sc==='Compiler error' || sc==='compiler error')
     {
         ccount=ccount+1;
     }
@@ -1256,6 +1308,7 @@ bot.dialog('/CTech7',
     console.log(ccount);
     session.send("Q8. What will be the output of the following Java code? *");
     session.beginDialog('/codecard');
+    
 }
 ]);
 
@@ -1265,28 +1318,30 @@ function (session)
     var codecard = getCodeCard();
     var codepic = new builder.Message(session).addAttachment(codecard);
     session.send(codepic);
-    //session.beginDialog('AttentionToDetail');
-
+    
 });
-function getCTCard(session) {
+function getCodeCard(session) {
     return new builder.HeroCard(session)
     .images([
         builder.CardImage.create(session, 'https://pbs.twimg.com/media/EU12c4_UEAETqIp?format=png&name=small')
     ]);
-}
+};
 
 bot.dialog('Ctech8',
-    function (session,args,next){
-    var sc=session.message.text;
+function(session,results,avg)
+    { 
+    var sc = session.message.text;
+   
     if(sc==='abc')
     {
         ccount=ccount+2;
     }
-    console.log(ccount);
-    session.send("Q8. What will be the output of the following Java code? *");
+    //console.log(ccount);
+    session.send("Q9. What will be the output of the following Java code? *");
     session.beginDialog('/codecardl');
+    
 }).triggerAction({
-    matches: 'CTech8'
+    matches: 'Ctech8'
 });
 
 bot.dialog('/codecardl',
@@ -1298,12 +1353,12 @@ function (session)
     //session.beginDialog('AttentionToDetail');
 
 });
-function getCTCardL(session) {
+function getCodeCardL(session) {
     return new builder.HeroCard(session)
     .images([
         builder.CardImage.create(session, 'https://pbs.twimg.com/media/EU14TPlUcAArfjg?format=png&name=small')
     ]);
-}
+};
 
 bot.dialog('Ctech9',
     function (session,args,next){
@@ -1313,65 +1368,78 @@ bot.dialog('Ctech9',
         ccount=ccount+2;
     }
     console.log(ccount);
-    session.send("This is the end of Coding domain...");
-    session.beginDialog('/CDSuccess');
+    session.beginDialog('/CTChoiceResult');
 }).triggerAction({
-    matches: 'CTech9'
+    matches: 'Ctech9'
 });
+
+bot.dialog('/CTChoiceResult',
+[  function(session,clp)
+    { 
+        avg=clp;
+        builder.Prompts.choice(session,'Do you think you did well and wish to view result or continue to the next domain ',rc);   
+        session.message.text=avg;
+    },
+     function(session,results,avg)
+    { 
+    var sc = session.message.text;
+   
+    if(sc==='continue')
+    {
+        session.send("Choose between Database Administrator and Software Tester:");
+    }
+    else
+    {
+        session.beginDialog('/CDSuccess');
+    }
+    console.log(dbcount);
+}
+]);
 
 bot.dialog('/CDSuccess',
 function (session)
-{   if(ccount>=23)
-    {
-        session.send("You are on your way to become a great CODER");
-    }
-    var cdcard = getCDcard();
-    var cd = new builder.Message(session).addAttachment(cdcard);
-    session.send(cd);
-    //session.beginDialog('AttentionToDetail');
-    session.send("It was nice interacting with you. Hopefully we were of some help!");
-});
-function getCDcard(session) {
-    return new builder.HeroCard(session)
-    .images([
-        builder.CardImage.create(session, 'https://coder.com/og-image.png')
-    ]);
-}
-
-bot.dialog('General', 
-function (session,arg){
-    session.send("First domain: Database Admin");
-    session.beginDialog('/dbconfirmation');
-    session.send("Next up: Software Tester");
-    session.beginDialog('/stconfirmation');
-    session.send("Last test: Coder");
-    session.beginDialog('/cdconfirmation');
-    if(dbcount>stcount && dbcount>ccount)
+{   if(dbcount>stcount && dbcount>ccount)
     {
         if(dbcount>=18)
         {
-        session.send("You are eligible to become a great DATABASE ADMINISTRATOR");
+        session.beginDialog('/DBSuccess');
         }
     }
     else if(stcount>dbcount && stcount>ccount)
     {
         if(stcount>=21)
         {
-        session.send("You are eligible to become a great SOFTWARE TESTER");
+            session.beginDialog('/STSuccess');
         }
     }
-    else
+    else if(ccount>dbcount && ccount>stcount)
     {
         if(ccount>=23)
         {
         session.send("You are on your way to become a great CODER");
+        var cdcard = getCDcard();
+        var cd = new builder.Message(session).addAttachment(cdcard);
+        session.send(cd);
         }
     }
+    
+    //session.beginDialog('AttentionToDetail');
+    session.send("It was nice interacting with you. Hopefully we were of some help!");
+
+});
+function getCDcard(session) {
+    return new builder.HeroCard(session)
+    .images([
+        builder.CardImage.create(session, 'https://coder.com/og-image.png')
+    ]);
+};
+
+bot.dialog('General', 
+function (session,arg){
+    session.send("Choose which domain you want to tackle first...\n"+"\n * Database administrator\n"+"\n * Software Tester\n"+"\n * Coder");
 }).triggerAction({
     matches: 'General'
 });
-
-
 
 bot.dialog('Bye', function (session,arg){
     //session.sendTyping();
